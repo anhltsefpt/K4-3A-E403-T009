@@ -59,9 +59,9 @@
 
 ## Checklist tự kiểm trước khi nộp *(rubric CP1)*
 
-- [ ] Lát cắt đúng format MỘT CÂU (1 user · 1 việc · 1 quyết định AI · 1 kết quả) ✅ (dòng 5)
-- [ ] Có evidence ban đầu (số đếm được + trích nguyên văn) ✅ (dòng 4)
-- [ ] Đủ tên phân công
-- [ ] Link repo GitHub đã công khai
+- [x] Lát cắt đúng format MỘT CÂU (1 user · 1 việc · 1 quyết định AI · 1 kết quả) ✅ (dòng 5)
+- [x] Có evidence ban đầu (số đếm được + trích nguyên văn) ✅ (dòng 4)
+- [x] Đủ tên phân công
+- [x] Link repo GitHub đã công khai
 - [ ] Đã khai ≥2 willing user (tên cụ thể)
 - [ ] Cả 5 mốc sẽ nộp bằng **cùng mã học viên đội trưởng**

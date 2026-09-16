@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Priority Digest · Bot Discord · Mock CP2</title>
+<style>
+  :root {
+    --bg: #313338; --bg2: #2b2d31; --bg3: #1e1f22;
+    --text: #dbdee1; --muted: #949ba4; --accent: #5865f2;
+    --red: #f23f43; --yellow: #f0b232; --gray: #80848e; --green: #23a55a;
+    --embed: #2b2d31; --input: #1e1f22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background: var(--bg3); color: var(--text); line-height: 1.45; display: flex;
+    justify-content: center; padding: 18px 10px; }
+  .app { width: 100%; max-width: 720px; background: var(--bg); border-radius: 12px;
+    overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,.5); position: relative;
+    display: flex; min-height: 620px; }
+  .mock-tag { position: absolute; top: 8px; right: 10px; background: #000b; color: #ffd27a;
+    font-size: 10px; padding: 3px 9px; border-radius: 20px; z-index: 20; }
+
+  /* sidebar kênh */
+  .side { width: 178px; flex: none; background: var(--bg2); padding: 10px 8px; border-right: 1px solid var(--bg3); }
+  .side h4 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; padding: 6px 8px 4px; }
+  .chn { display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 4px;
+    color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; }
+  .chn .h { font-size: 17px; opacity: .7; }
+  .chn:hover { background: #35373c; color: var(--text); }
+  .chn.active { background: #404249; color: #fff; }
+  .chn .badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; border-radius: 10px; padding: 0 6px; font-weight: 700; }
+  .chn.pin { color: #d7dade; } .chn.pin .h { color: var(--accent); opacity: 1; }
+
+  /* main */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .main-head { padding: 12px 16px; border-bottom: 1px solid var(--bg3); font-weight: 600; font-size: 15px;
+    display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 0 rgba(0,0,0,.2); }
+  .main-head .h { color: var(--muted); font-size: 20px; }
+  .main-head small { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: auto; }
+  .scroll { padding: 10px 16px 18px; overflow-y: auto; flex: 1; }
+  .view { display: none; } .view.on { display: block; }
+
+  .m { display: flex; gap: 12px; padding: 5px 4px; border-radius: 4px; }
+  .m .av { width: 38px; height: 38px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 12px; color: #fff; }
+  .m .body { flex: 1; min-width: 0; }
+  .m .head { font-size: 14px; }
+  .m .head .name { font-weight: 600; }
+  .m .head .time { color: var(--muted); font-size: 11px; margin-left: 8px; }
+  .m .txt { font-size: 14px; color: #d3d6db; word-wrap: break-word; }
+  .bot-tag { background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+  .noise .txt { color: #a7abb2; }
+  .flash { animation: flash 2s ease; }
+  @keyframes flash { 0%,100%{background:transparent} 12%,60%{background:#3d4270} }
+
+  .agg { background: #2b2f45; border: 1px solid #3a3f66; color: #cdd3f5; border-radius: 8px; padding: 9px 12px; font-size: 12px; margin: 4px 0 10px; }
+  .agg b { color: #fff; }
+
+  .composer { margin-top: 6px; background: var(--bg2); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+  .slash { background: var(--accent); color: #fff; border-radius: 4px; font-size: 13px; font-weight: 600; padding: 3px 8px; }
+  .composer .ph { color: var(--muted); font-size: 13px; flex: 1; }
+  .send { border: none; background: var(--green); color: #fff; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .send:hover { filter: brightness(1.08); }
+
+  .typing { color: var(--muted); font-size: 13px; padding: 8px 4px 4px; display: none; }
+  .typing.on { display: block; }
+  .dot { animation: blink 1.2s infinite; } .dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+  @keyframes blink { 0%,60%,100%{opacity:.2} 30%{opacity:1} }
+  .eph-label { font-size: 11px; color: var(--muted); margin: 2px 0 4px; }
+
+  .embed { display: none; background: var(--embed); border-left: 4px solid var(--accent); border-radius: 4px; padding: 12px 14px; margin-top: 4px; max-width: 470px; }
+  .embed.on { display: block; animation: fade .3s ease; }
+  @keyframes fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+  .etitle { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .esub { font-size: 12px; color: var(--muted); margin-bottom: 12px; } .esub.empty { color: var(--green); font-weight: 600; }
+  .egroup { margin-bottom: 12px; }
+  .gh { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+  .eitem { font-size: 13.5px; padding: 4px 0; transition: opacity .35s, transform .35s; }
+  .eitem .t { font-weight: 600; } .eitem .dl { font-weight: 700; }
+  .eitem.red .dl { color: #ff9c9e; } .eitem.yellow .dl { color: #ffd27a; }
+  .eitem .sub { color: var(--muted); font-size: 12px; }
+  .eitem .chtag { color: #b9bfff; }
+  .eitem.gone { opacity: 0; transform: translateX(12px); height: 0; padding: 0; margin: 0; overflow: hidden; }
+  /* đánh dấu xong = gạch ngang (Discord: ~~text~~), vẫn hiển thị */
+  .eitem.done .t, .eitem.done .dl { text-decoration: line-through; }
+  .eitem.done { opacity: .5; }
+  .eitem.done .t::before { content: "✅ "; text-decoration: none; display: inline-block; }
+  .warn { color: #ffce6b; }
+  .efoot { border-top: 1px solid #3a3c42; margin-top: 10px; padding-top: 8px; font-size: 11px; color: var(--muted); }
+
+  .rows { margin-top: 8px; max-width: 470px; display: flex; flex-direction: column; gap: 8px; }
+  .arow { display: flex; gap: 8px; }
+  .select { flex: 1; background: var(--input); border: 1px solid #1a1b1e; border-radius: 4px; padding: 9px 12px; font-size: 13px; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+  .select:hover { border-color: #4e5058; }
+  .select .chev { color: var(--muted); font-size: 11px; }
+  .dbtn { background: #4e5058; color: #fff; border: none; border-radius: 4px; padding: 9px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .dbtn.primary { background: var(--accent); } .dbtn.success { background: var(--green); } .dbtn.danger { background: var(--red); }
+  .dbtn:hover { filter: brightness(1.1); }
+  .dd { display: none; background: var(--bg2); border: 1px solid #1a1b1e; border-radius: 6px; margin-top: -2px; padding: 6px; max-width: 470px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+  .dd.on { display: block; }
+  .dd-hint { font-size: 11px; color: var(--muted); padding: 4px 8px 6px; }
+  .dd-opt { display: flex; align-items: center; gap: 9px; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .dd-opt:hover { background: #35373c; } .dd-opt .osub { color: var(--muted); font-size: 11px; }
+  .dd-box { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #6b6f78; flex: none; display: grid; place-items: center; font-size: 12px; color: #fff; }
+  .dd-opt.sel .dd-box { background: var(--accent); border-color: var(--accent); }
+
+  .ephlog { margin-top: 6px; display: flex; flex-direction: column; gap: 8px; max-width: 500px; }
+  .eph { background: rgba(88,101,242,.06); border-left: 3px solid #3a3c98; border-radius: 4px; padding: 8px 10px; font-size: 13px; animation: fade .25s ease; }
+  .eph .m { padding: 0; }
+  .eph-content { margin-top: 2px; }
+  .eph .quote { background: var(--bg2); border-radius: 6px; padding: 8px 10px; margin: 6px 0; font-size: 12.5px; }
+  .eph .quote .qh { color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+  .eph .quote .u { color: #8aa2ff; font-weight: 600; }
+  .eph .concl { color: #b6e2c4; font-size: 12.5px; margin-top: 4px; }
+  .eph-foot { color: var(--muted); font-size: 11px; margin-top: 8px; }
+  .lnk { color: #00a8fc; cursor: pointer; text-decoration: none; font-weight: 600; } .lnk:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="mock-tag">MOCK · CP2 · chưa gọi AI</div>
+
+  <!-- SIDEBAR -->
+  <div class="side">
+    <h4>Kênh khoá 4</h4>
+    <div class="chn pin active" data-v="digest" onclick="switchView('digest')"><span class="h">🤖</span> priority-digest</div>
+    <div class="chn" data-v="build-phase" onclick="switchView('build-phase')"><span class="h">#</span> build-phase <span class="badge">12</span></div>
+    <div class="chn" data-v="channel_10" onclick="switchView('channel_10')"><span class="h">#</span> channel_10 <span class="badge">654</span></div>
+    <div class="chn" data-v="channel_02" onclick="switchView('channel_02')"><span class="h">#</span> channel_02 <span class="badge">128</span></div>
+    <div class="chn" data-v="channel_11" onclick="switchView('channel_11')"><span class="h">#</span> channel_11 <span class="badge">96</span></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="main-head"><span class="h" id="mh-h">🤖</span> <span id="mh-title">priority-digest</span> <small id="mh-sub">Bot tổng hợp deadline từ nhiều kênh</small></div>
+    <div class="scroll">
+
+      <!-- VIEW: DIGEST -->
+      <div class="view on" id="view-digest">
+        <div class="agg">🗂️ <b>Tổng hợp từ 4 kênh</b> — #build-phase · #channel_10 · #channel_02 · #channel_11 · <b>1.092 tin / 3 ngày</b>. Deadline nằm rải khắp các kênh, không thể theo dõi thủ công.</div>
+
+        <div class="composer"><span class="slash">/digest</span><span class="ph">hôm nay</span><button class="send" onclick="run()">Gửi ⏎</button></div>
+        <div class="typing" id="typing">Priority Digest <b>đang quét các kênh</b><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+
+        <div class="m" id="botreply" style="display:none; margin-top:6px">
+          <div class="av" style="background:var(--accent)">PD</div>
+          <div class="body">
+            <div class="head"><span class="name">Priority Digest</span><span class="bot-tag">APP</span><span class="time">hôm nay 07:30</span></div>
+            <div class="eph-label">👁️ Chỉ mình bạn (@P07) nhìn thấy phản hồi này</div>
+
+            <div class="embed on" style="display:block" id="embed">
+              <div class="etitle">📋 Việc cần làm hôm nay — 15/09</div>
+              <div class="esub" id="esub">Quét 1.092 tin từ 4 kênh · 4 việc có hạn · 1 mục cần xác nhận</div>
+
+              <div class="egroup" id="g-red">
+                <div class="gh" style="color:var(--red)">🔴 Cần làm ngay</div>
+                <div class="eitem red" data-id="ws">
+                  <span class="t">Workshop: AI Product Thinking</span> — <span class="dl">⏰ 20:00 tối nay</span>
+                  <div class="sub">Build Phase · nguồn: <span class="chtag">#build-phase</span></div>
+                </div>
+                <div class="eitem red" data-id="daily">
+                  <span class="t">Nộp Daily Standup</span> — <span class="dl">⏰ trước 10:00 hôm nay</span>
+                  <div class="sub">Khung 0h–10h để +XP · nguồn: <span class="chtag">#channel_10</span></div>
+                </div>
+                <div class="eitem red" data-id="mentor">
+                  <span class="t">Nộp Mentor Duty</span> — <span class="dl">⏰ trước 12:00 buổi mentor duty</span>
+                  <div class="sub">Nộp trễ không +XP · nguồn: <span class="chtag">#channel_10</span></div>
+                </div>
+              </div>
+
+              <div class="egroup" id="g-yellow">
+                <div class="gh" style="color:var(--yellow)">🟡 Sắp đến hạn</div>
+                <div class="eitem yellow" data-id="gate1">
+                  <span class="t">Gate 1 · Chốt đề tài</span> — <span class="dl">⏰ 23:59 · 20/09</span> <span class="sub">(còn 5 ngày)</span>
+                  <div class="sub">Cần: Brief, PRD, Wireframe, GitHub Repo · nguồn: <span class="chtag">#channel_10</span></div>
+                </div>
+              </div>
+
+              <div class="egroup" id="g-gray">
+                <div class="gh" style="color:var(--gray)">⚪ Cần người xác nhận</div>
+                <div class="eitem" data-id="ghepdoi">
+                  <span class="t">Deadline "ghép đội tự do"</span> — <span class="warn">2 tin ở 2 kênh nói khác nhau</span>
+                  <div class="sub">nguồn: <span class="chtag">#channel_02</span> + <span class="chtag">#channel_11</span> · chọn ở menu 🔍 để xem</div>
+                </div>
+              </div>
+
+              <div class="efoot">Chọn mục ở menu "🔍 Xem nguồn / ngữ cảnh" → bot đưa link nhảy thẳng tới tin gốc ở kênh của nó.</div>
+            </div>
+
+            <div class="rows" id="rows">
+              <div class="arow"><div class="select" onclick="toggleDD('dd-done','done')"><span>✅ Đánh dấu đã xong…</span><span class="chev">▼</span></div></div>
+              <div class="dd" id="dd-done"></div>
+              <div class="arow"><div class="select" onclick="toggleDD('dd-hide','hide')"><span>🙈 Ẩn khỏi digest…</span><span class="chev">▼</span></div></div>
+              <div class="dd" id="dd-hide"></div>
+              <div class="arow"><div class="select" onclick="toggleDD('dd-src','source')"><span>🔍 Xem nguồn / ngữ cảnh…</span><span class="chev">▼</span></div></div>
+              <div class="dd" id="dd-src"></div>
+              <div class="arow"><button class="dbtn primary" onclick="run()">🔄 Làm mới</button></div>
+            </div>
+            <div class="ephlog" id="ephlog"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: build-phase -->
+      <div class="view" id="view-build-phase">
+        <div class="m noise"><div class="av" style="background:#7a56c2">Ad</div><div class="body"><div class="head"><span class="name">Admin</span><span class="time">hôm nay 06:40</span></div><div class="txt">Chào buổi sáng cả nhà 👋</div></div></div>
+        <div class="m" id="m-ws"><div class="av" style="background:#c9843e">Od</div><div class="body"><div class="head"><span class="name">Odin</span><span class="time">hôm nay 07:15</span></div><div class="txt">Build Phase tối nay có Workshop chủ đề "AI Product Thinking", bắt đầu lúc 20:00. Cả nhà tham gia đầy đủ nhé!</div></div></div>
+      </div>
+
+      <!-- VIEW: channel_10 -->
+      <div class="view" id="view-channel_10">
+        <div class="m noise"><div class="av" style="background:#5865f2">D5</div><div class="body"><div class="head"><span class="name">D5559</span><span class="time">12/09 23:53</span></div><div class="txt">Hạn nộp Lab02</div></div></div>
+        <div class="m" id="m-gate1"><div class="av" style="background:#faa61a">BOT</div><div class="body"><div class="head"><span class="name">BOT</span><span class="bot-tag">APP</span><span class="time">13/09 21:58</span></div><div class="txt">Gate 1 — Chốt đề tài · Deadline 23:59:00 20/9/2026 · Deliverables: Brief, PRD, Wireframe, GitHub Repo Setup AI Log.</div></div></div>
+        <div class="m noise"><div class="av" style="background:#3ba55d">D8</div><div class="body"><div class="head"><span class="name">D8411</span><span class="time">12/09 12:51</span></div><div class="txt">[@BOT] check xem t đã nộp bài codelab chưa</div></div></div>
+        <div class="m" id="m-daily"><div class="av" style="background:#3ba55d">D9</div><div class="body"><div class="head"><span class="name">D9617</span><span class="time">14/09 15:46</span></div><div class="txt">Khung giờ daily standup để được cộng XP: 0h-10h sáng. Nộp trễ vẫn ghi nhận nhưng không +XP.<br>Khung giờ nộp mentor duty để được cộng XP: Trước 12h00 các buổi mentor duty. Nộp trễ vẫn ghi nhận nhưng không +XP.</div></div></div>
+      </div>
+
+      <!-- VIEW: channel_02 -->
+      <div class="view" id="view-channel_02">
+        <div class="m noise"><div class="av" style="background:#eb459e">D2</div><div class="body"><div class="head"><span class="name">D2313</span><span class="time">12/09 12:04</span></div><div class="txt">có điểm danh ws không ạ</div></div></div>
+        <div class="m" id="m-ghepdoi-q"><div class="av" style="background:#eb459e">D9</div><div class="body"><div class="head"><span class="name">D9616</span><span class="time">13/09 00:25</span></div><div class="txt">a ơi sao deadline ghép đội tự do end sớm vậy a?</div></div></div>
+        <div class="m noise"><div class="av" style="background:#5865f2">D7</div><div class="body"><div class="head"><span class="name">D7688</span><span class="time">13/09 08:10</span></div><div class="txt">vào trước 30p là được nhé, b liên hệ labcoach hôm đó để điểm danh sau</div></div></div>
+      </div>
+
+      <!-- VIEW: channel_11 -->
+      <div class="view" id="view-channel_11">
+        <div class="m noise"><div class="av" style="background:#5865f2">D2</div><div class="body"><div class="head"><span class="name">D2228</span><span class="time">13/09 20:50</span></div><div class="txt">các bạn labcoach cho mình hỏi lịch sử điểm danh xem ở đâu ạ</div></div></div>
+        <div class="m" id="m-ghepdoi-a"><div class="av" style="background:#3ba55d">D9</div><div class="body"><div class="head"><span class="name">D9617</span><span class="time">13/09 21:18</span></div><div class="txt">Các bạn chờ BTC ghép đội nhé, hiện tại cửa sổ lập đội tự do đã đóng.</div></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var ITEMS = [
+    { id:'ws',      label:'Workshop: AI Product Thinking', kind:'task',    type:'Workshop / sự kiện' },
+    { id:'daily',   label:'Nộp Daily Standup',             kind:'task',    type:'Daily Standup' },
+    { id:'mentor',  label:'Nộp Mentor Duty',               kind:'task',    type:'Mentor Duty' },
+    { id:'gate1',   label:'Gate 1 · Chốt đề tài',          kind:'task',    type:'Gate / mốc nộp bài' },
+    { id:'ghepdoi', label:'Deadline "ghép đội tự do"',     kind:'confirm', type:'Ghép đội' }
+  ];
+  // nguồn mỗi mục: view = kênh chứa tin, dom = id tin để nhảy tới (jump-to-message)
+  var SRC = {
+    ws:      [{ view:'build-phase', dom:'m-ws',        ch:'#build-phase', u:'Odin',  t:'hôm nay 07:15', id:'—' }],
+    daily:   [{ view:'channel_10',  dom:'m-daily',     ch:'#channel_10',  u:'D9617', t:'14/09 15:46',   id:'M78917' }],
+    mentor:  [{ view:'channel_10',  dom:'m-daily',     ch:'#channel_10',  u:'D9617', t:'14/09 15:46',   id:'M78917' }],
+    gate1:   [{ view:'channel_10',  dom:'m-gate1',     ch:'#channel_10',  u:'BOT',   t:'13/09 21:58',   id:'M01982' }],
+    ghepdoi: [{ view:'channel_02',  dom:'m-ghepdoi-q', ch:'#channel_02',  u:'D9616', t:'13/09 00:25',   id:'M19124' },
+              { view:'channel_11',  dom:'m-ghepdoi-a', ch:'#channel_11',  u:'D9617', t:'13/09 21:18',   id:'M50841' }]
+  };
+  var VIEWMETA = {
+    'digest':      { h:'🤖', title:'priority-digest', sub:'Bot tổng hợp deadline từ nhiều kênh' },
+    'build-phase': { h:'#',  title:'build-phase',     sub:'Thông báo Build Phase' },
+    'channel_10':  { h:'#',  title:'channel_10',      sub:'654 tin · 3 ngày' },
+    'channel_02':  { h:'#',  title:'channel_02',      sub:'Hỏi đáp' },
+    'channel_11':  { h:'#',  title:'channel_11',      sub:'Hỏi đáp labcoach' }
+  };
+
+  function switchView(v){
+    document.querySelectorAll('.view').forEach(function(x){ x.classList.remove('on'); });
+    document.getElementById('view-'+v).classList.add('on');
+    document.querySelectorAll('.chn').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-v')===v); });
+    var meta = VIEWMETA[v];
+    document.getElementById('mh-h').textContent = meta.h;
+    document.getElementById('mh-title').textContent = meta.title;
+    document.getElementById('mh-sub').textContent = meta.sub;
+    document.querySelector('.scroll').scrollTop = 0;
+  }
+  // JUMP-TO-MESSAGE: nhảy sang kênh khác + highlight tin gốc (đúng như click message-link Discord)
+  function jump(view, dom){
+    switchView(view);
+    var el = document.getElementById(dom);
+    if(!el) return;
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  }
+
+  function itemEl(id){ return document.querySelector('.eitem[data-id="'+id+'"]'); }
+  function alive(){ return ITEMS.filter(function(i){ return !itemEl(i.id).classList.contains('gone'); }); }
+  function isDone(id){ return itemEl(id).classList.contains('done'); }
+
+  function run(){
+    closeAllDD();
+    document.getElementById('ephlog').innerHTML='';
+    document.getElementById('botreply').style.display='none';
+    document.getElementById('typing').classList.add('on');
+    setTimeout(function(){
+      document.getElementById('typing').classList.remove('on');
+      document.querySelectorAll('.eitem').forEach(function(it){ it.classList.remove('gone','done'); });
+      recount();
+      document.getElementById('botreply').style.display='flex';
+    }, 1500);
+  }
+  function recount(){
+    var a = alive();
+    var pending=a.filter(function(i){return i.kind==='task' && !isDone(i.id);}).length;
+    var doneN=a.filter(function(i){return i.kind==='task' && isDone(i.id);}).length;
+    var conf=a.filter(function(i){return i.kind==='confirm';}).length;
+    var e=document.getElementById('esub');
+    if(pending===0&&conf===0){ e.textContent='🎉 Xong hết việc hôm nay!'+(doneN?(' ('+doneN+' mục đã gạch ngang phía trên)'):''); e.classList.add('empty'); }
+    else { e.textContent='Quét 1.092 tin từ 4 kênh · '+pending+' việc có hạn'+(doneN?(' · '+doneN+' đã xong'):'')+' · '+conf+' mục cần xác nhận'; e.classList.remove('empty'); }
+    ['g-red','g-yellow','g-gray'].forEach(function(g){ var b=document.getElementById(g); b.style.display=b.querySelectorAll('.eitem:not(.gone)').length?'block':'none'; });
+  }
+
+  function closeAllDD(){ ['dd-done','dd-hide','dd-src'].forEach(function(id){ document.getElementById(id).classList.remove('on'); }); }
+  function toggleDD(id, mode){
+    var dd=document.getElementById(id); var open=dd.classList.contains('on');
+    closeAllDD(); if(open) return;
+    var opts=(mode==='done')?alive().filter(function(i){return i.kind==='task' && !isDone(i.id);}):alive();
+    if(!opts.length){ dd.innerHTML='<div class="dd-hint">Không còn mục nào.</div>'; dd.classList.add('on'); return; }
+    var html='';
+    if(mode==='source'){
+      html+='<div class="dd-hint">Chọn 1 mục — bot đưa link nhảy tới tin gốc (chỉ bạn thấy):</div>';
+      opts.forEach(function(i){
+        html+='<div class="dd-opt" onclick="showSource(\''+i.id+'\')"><span class="dd-box" style="border-radius:50%">›</span><span>'+i.label+(i.kind==='confirm'?' <span class="osub">· 2 tin, 2 kênh</span>':'')+'</span></div>';
+      });
+    } else {
+      html+='<div class="dd-hint">'+(mode==='hide'?'Chọn mục muốn ẩn (chọn nhiều được):':'Chọn mục đã hoàn thành (chọn nhiều được):')+'</div>';
+      opts.forEach(function(i){ html+='<div class="dd-opt" data-id="'+i.id+'" onclick="this.classList.toggle(\'sel\')"><span class="dd-box">✓</span><span>'+i.label+' <span class="osub">· '+SRC[i.id][0].ch+'</span></span></div>'; });
+      html+='<button class="dbtn '+(mode==='hide'?'':'success')+'" style="width:100%;margin-top:4px" onclick="'+(mode==='hide'?'applyHide':'applyDone')+'(\''+id+'\')">Áp dụng</button>';
+    }
+    dd.innerHTML=html; dd.classList.add('on');
+  }
+  function chosen(ddId){ return Array.prototype.map.call(document.querySelectorAll('#'+ddId+' .dd-opt.sel'), function(o){return o.getAttribute('data-id');}); }
+
+  function applyDone(ddId){
+    var ids=chosen(ddId); closeAllDD(); if(!ids.length) return;
+    ids.forEach(function(id){ itemEl(id).classList.add('done'); }); recount();
+    eph('✅ Đã đánh dấu <b>'+ids.length+' mục</b> hoàn thành → <b>~~gạch ngang~~</b> (vẫn hiển thị). Digest mới ngày mai sẽ bỏ chúng.'
+      +'<div class="arow" style="margin-top:8px"><button class="dbtn" onclick="undoDone(this,\''+ids.join(',')+'\')">↩️ Hoàn tác</button></div>');
+  }
+  function undoDone(btn, csv){
+    csv.split(',').forEach(function(id){ itemEl(id).classList.remove('done'); }); recount();
+    btn.closest('.arow').outerHTML='<div style="color:#b6e2c4;font-size:12.5px;margin-top:6px">↩️ Đã hoàn tác — các mục trở lại "chưa xong".</div>';
+  }
+  function applyHide(ddId){
+    var ids=chosen(ddId); closeAllDD(); if(!ids.length) return;
+    ids.forEach(function(id){ itemEl(id).classList.add('gone'); }); recount();   // ẩn NGAY khỏi message (interaction.update)
+    var names=ids.map(function(id){return ITEMS.find(function(x){return x.id===id;}).label;});
+    var types=ids.map(function(id){return ITEMS.find(function(x){return x.id===id;}).type;});
+    eph('🙈 Đã ẩn <b>'+ids.length+' mục</b> khỏi digest hôm nay: '+names.join(', ')+'.'
+      +'<div style="color:var(--muted);font-size:12px;margin-top:6px">Ẩn nhầm? Bấm Hoàn tác. Muốn AI luôn bỏ qua thì bấm nút bên phải.</div>'
+      +'<div class="arow" style="margin-top:6px"><button class="dbtn" onclick="undoHide(this,\''+ids.join(',')+'\')">↩️ Hoàn tác</button>'
+      +'<button class="dbtn danger" onclick="ruleAlways(this,\''+types.join('|')+'\')">🚫 Luôn bỏ qua loại này</button></div>');
+  }
+  function undoHide(btn, csv){
+    csv.split(',').forEach(function(id){ itemEl(id).classList.remove('gone'); }); recount();
+    btn.closest('.arow').outerHTML='<div style="color:#b6e2c4;font-size:12.5px;margin-top:6px">↩️ Đã hoàn tác — các mục trở lại digest.</div>';
+  }
+  function ruleAlways(btn, typesStr){
+    // Discord: action row chỉ chứa COMPONENT, không chèn được text tự do → đổi nút này thành nút disabled + đổi nhãn
+    btn.textContent='🚫 Đã bật luật: bỏ qua '+typesStr.split('|').join(', ');
+    btn.disabled=true; btn.style.opacity='.6'; btn.style.cursor='default';
+    btn.setAttribute('onclick','');
+  }
+
+  // Xem nguồn/ngữ cảnh → ephemeral có LINK nhảy thẳng tới tin gốc ở kênh của nó
+  function showSource(id){
+    closeAllDD();
+    var item=ITEMS.find(function(x){return x.id===id;});
+    var rows=SRC[id].map(function(m){
+      return '<div class="quote"><div class="qh"><span class="u">'+m.u+'</span> · '+m.ch+' · '+m.t+' · '+m.id+'</div>'+
+             '<a class="lnk" onclick="jump(\''+m.view+'\',\''+m.dom+'\')">→ Nhảy tới tin gốc ở '+m.ch+'</a></div>';
+    }).join('');
+    var concl=(id==='ghepdoi')?'<div class="concl">✅ Sau khi đọc cả 2 kênh: cửa sổ lập đội tự do <b>đã đóng</b> → không phải việc cần làm, chờ BTC ghép.</div>':'';
+    eph('📌 Nguồn của "<b>'+item.label+'</b>" — bấm link để Discord nhảy tới đúng tin:'+rows+concl);
+  }
+
+  function eph(html){
+    var log=document.getElementById('ephlog');
+    var d=document.createElement('div'); d.className='eph';
+    d.innerHTML='<div class="m"><div class="av" style="background:var(--accent)">PD</div><div class="body">'+
+      '<div class="head"><span class="name">Priority Digest</span><span class="bot-tag">APP</span><span class="time">bây giờ</span></div>'+
+      '<div class="eph-content">'+html+'</div>'+
+      '<div class="eph-foot">👁️ Chỉ bạn nhìn thấy được điều này · <a class="lnk" onclick="this.closest(\'.eph\').remove()">Bỏ tin nhắn</a></div>'+
+      '</div></div>';
+    log.appendChild(d); d.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+</script>
+</body>
+</html>
