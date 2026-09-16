@@ -11,8 +11,7 @@
 - **Đội trưởng (họ tên):** Lê Tuấn Anh
 - **Mã học viên đội trưởng:** 2A202602952
 - **GitHub đội trưởng:** anhltsefpt
-- **Link repo GitHub (đã để công khai):** _______________ *(tạo repo mới tên `K4-3A-<phòng>-<tênnhóm>`, để public)*
-
+- **Link repo GitHub (đã để công khai):** https://github.com/anhltsefpt/K4-3A-E403-T009
 ---
 
 ## Canvas 7 dòng *(theo guide §1.5)*
