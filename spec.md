@@ -35,7 +35,7 @@ Loại: [x] Tối ưu tính năng có sẵn (thay con bot nhắc lịch của BT
 
 ## §3. Giải pháp tương tự
 - **Bot "Trợ lý" của BTC:** flow = tóm tắt ngày "học viên đang hỏi gì". **Đáng học** = định dạng bản tin ngày gọn, gom theo kênh. **Đáng né** = lệ thuộc người cập nhật tay → cũ/sai, và **bịa "nguồn tham chiếu"** (thấy trong `k4_daily_reports.md`). **Mình khác** = đọc thẳng tin gốc, mỗi mục **dẫn link tin nguồn**, ca mâu thuẫn **flag ⚪ thay vì chốt liều**.
-- **Slack "Catch me up" / AI recap:** flow = tóm tắt kênh/luồng chưa đọc. **Đáng học** = ưu tiên theo mức liên quan, cho người bấm mở tin gốc. **Đáng né** = recap dạng văn xuôi, **không tách được "đây là deadline phải làm"** khỏi tán gẫu. **Mình khác** = output **có cấu trúc theo ưu tiên hành động** (🔴 làm ngay / 🟡 sắp đến / ⚪ cần xác nhận), gắn mốc + kênh nguồn.
+- **Discord Catch Up / Summaries (tính năng ngay trên Discord):** flow = tóm tắt kênh/luồng chưa đọc, gợi ý luồng đáng xem. **Đáng học** = ở đúng nơi học viên đã chat, cho bấm nhảy về tin gốc. **Đáng né** = recap dạng văn xuôi "đang bàn gì", **không tách được "đây là deadline phải làm"** khỏi tán gẫu, và không cảnh báo khi hai tin **mâu thuẫn**. **Mình khác** = output **có cấu trúc theo ưu tiên hành động** (🔴 làm ngay / 🟡 sắp đến / ⚪ cần xác nhận), gắn mốc + kênh nguồn, flag ca mâu thuẫn.
 
 ## §4. Thiết kế
 - **Lát cắt MỘT CÂU:** học viên gõ `/digest` → AI phân loại tin nhiều kênh → trả embed gom task/deadline theo ưu tiên (🔴/🟡/⚪), mỗi mục có deadline + kênh nguồn + link tin gốc.
