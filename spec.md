@@ -138,7 +138,7 @@ Loại: [x] Tối ưu tính năng có sẵn (thay con bot nhắc lịch của BT
   | **demo** | **Lê Tuấn Anh** + **Nguyễn Sơn Giang** | Dựng server test Discord, nạp tin mẫu (`CP3-seed-messages.md`), quay video 30s CP3 |
 
   *(Vibe-coding rule CP6: mỗi người phải giải thích được phần mang tên mình.)*
-- **Willing users (≥2):** ⟨CHƯA CHỐT — điền **tên + vai thật** trước CP5⟩. R6 yêu cầu người **ngoài nhóm** thật (tên/vai/task/quote nguyên văn) → **không bịa**; bịa sẽ mất điểm nặng hơn để trống.
+- **Willing users (≥2):** người ngoài nhóm đã dùng thử, định danh **ẩn danh** là `P-001` · `P-002` · `P-003` (vai/nghề + task + quote nguyên văn ở `validation/nhat-ky-validation.md`). **Không công khai tên thật trong repo** (yêu cầu bảo mật); bảng ánh xạ mã↔người giữ riêng ngoài repo, xuất trình khi giám khảo cần. Người thật, quote nguyên văn — **không bịa**.
 - **Multi-prototype (nếu làm):** so gpt-4o-mini vs gpt-4o trên cùng golden set → 2 dòng số.
 
 ## §9. Changelog
