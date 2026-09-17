@@ -2,7 +2,7 @@
 Hướng: [ ] A — VLearn  [x] B — Trợ lý Học viên  [ ] C — Làn mở
 Loại: [x] Tối ưu tính năng có sẵn (thay con bot nhắc lịch của BTC)  [ ] Tính năng mới
 
-> **Trạng thái: BẢN NHÁP CP3 — chốt tại CP4 (21:00 17/9).** Chỗ `⟨…⟩` là phần nhóm phải điền. Quality bar (§7) chốt cứng lúc nộp CP4, sau đó không sửa.
+> **Trạng thái: ĐÃ CHỐT CP4 · đang bổ sung validation R6 (CP5).** Quality bar (§7) đã khóa cứng lúc nộp CP4, không sửa sau. Chỗ `⟨…⟩` còn lại là phần điền nốt ở CP5.
 
 ## §1. User & Job
 - **Job executor + workflow:** học viên khoá 4 (Build Phase), đầu ngày mở Discord thấy nhiều kênh quá tải (~1.092 tin/3 ngày ở 4 kênh; `channel_10` một mình 654 tin).
@@ -46,7 +46,7 @@ Loại: [x] Tối ưu tính năng có sẵn (thay con bot nhắc lịch của BT
   | Nguyên tắc | Áp vào đâu |
   |---|---|
   | Make clear what the system can do | Embed ghi rõ "gom từ nhiều kênh theo ưu tiên" |
-  | Show contextually relevant info | Mỗi mục kèm deadline + #kênh + link tin gốc |
+  | Show contextually relevant info | Mỗi mục kèm deadline + #kênh + **link xem nguồn ngay trên dòng (1-click, nhảy tin gốc)** |
   | Support efficient correction | Nút ✅ đánh dấu xong / 🙈 ẩn / ↩️ hoàn tác |
   | Convey uncertainty (⑤ scope) | Ca mâu thuẫn → ⚪ "cần xác nhận" thay vì đoán |
 
