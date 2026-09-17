@@ -1,0 +1,16 @@
+# Bí mật — KHÔNG commit
+src/.env
+.env
+
+# Kết quả chạy (tự sinh)
+out/
+__pycache__/
+*.pyc
+
+# Môi trường ảo Python
+.venv/
+venv/
+
+# Data BTC — KHÔNG commit vào repo nộp bài (theo quy định data/README.md)
+data/
+*.DS_Store
