@@ -2,7 +2,17 @@
 
 > Cần **5 người ngoài nhóm**, trong đó **≥2 người đã khai Willing users từ CP1** (điền tên vào `spec.md` §8).
 > Người chê vẫn tính đủ điểm — miễn bằng chứng thật. Quote phải **nguyên văn** (giữ cả lỗi chính tả).
-> Kịch bản + 3 task: xem [`kich-ban-test.md`](kich-ban-test.md).
+> Kịch bản đầy đủ: xem [`kich-ban-test.md`](kich-ban-test.md).
+
+## 3 task giao cho người thử (giải nghĩa T1 / T2 / T3)
+
+| Mã | Task giao (đọc cho người thử) | Kiểm tính năng nào | Đáp án đúng trong data mẫu |
+|---|---|---|---|
+| **T1** 🔴 | *"Hôm nay bạn **phải nộp gì gấp nhất**, nó nằm **kênh nào**? Mở tin gốc ra xem."* | Nhóm 🔴 **Cần làm ngay** + nút **🔍 Xem nguồn** (nhảy về tin gốc) | "hạn nộp Lab03 · 23:59 hôm nay 14/9" ở `#channel_10` |
+| **T2** ⚪ | *"Có deadline nào **hai người nói khác nhau** không? Bạn **tin cái nào**?"* | Nhóm ⚪ **Cần xác nhận** — bot KHÔNG tự chốt khi 2 tin mâu thuẫn (ngôi sao sản phẩm) | ghép đội tự do: `#channel_02` "sao end sớm?" ↔ `#channel_11` "cửa sổ đã đóng" |
+| **T3** ✅ | *"Giả sử bạn **vừa làm xong** 1 việc, **đánh dấu** nó lại."* | Nút **✅ Đánh dấu đã xong** (gạch ngang, vẫn hiện + nút ↩️ hoàn tác) | mục bất kỳ → bị ~~gạch ngang~~ |
+
+Trong các bảng bên dưới: **"T1 🔴 xong?"** = tự tìm được việc gấp + mở nguồn · **"T2 ⚪ hiểu?"** = hiểu ⚪ là "bot nhường người quyết" · **"T3 ✅ xong?"** = tự đánh dấu xong được.
 
 ## Thông tin buổi test
 - **Ngày test:** ⟨…⟩
@@ -16,8 +26,8 @@
 
 | # | Tên (vai/nghề) | Willing từ CP1? | T1 🔴 xong? | T2 ⚪ hiểu? | T3 ✅ xong? | Kẹt chính |
 |---|---|---|---|---|---|---|
-| 1 | ⟨…⟩ | ⟨Có/Không⟩ | ⟨✅/⚠️/❌⟩ | ⟨✅/⚠️/❌⟩ | ⟨✅/⚠️/❌⟩ | ⟨…⟩ |
-| 2 | ⟨…⟩ | ⟨Có/Không⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ |
+| P-001 | ⟨tên · vai⟩ | ⟨Có/Không⟩ | ✅ | (không ghi nhận) | ✅ | Không — dùng mượt, không confuse |
+| P-002 | ⟨tên · vai⟩ | ⟨Có/Không⟩ | (không ghi nhận) | (không ghi nhận) | (không ghi nhận) | Hiển thị rối · tóm tắt chữ nhỏ dễ bỏ sót · các mục sát nhau |
 | 3 | ⟨…⟩ | ⟨Không⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ |
 | 4 | ⟨…⟩ | ⟨Không⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ |
 | 5 | ⟨…⟩ | ⟨Không⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ |
@@ -28,21 +38,26 @@ Ký hiệu: ✅ tự làm được · ⚠️ làm được nhưng lúng túng ·
 
 ## Nhật ký chi tiết từng người
 
-### Người 1 — ⟨tên · vai⟩  ·  Willing CP1: ⟨Có/Không⟩
+### P-001 — ⟨tên · vai⟩  ·  Willing CP1: ⟨Có/Không⟩
 | Task giao | Họ làm gì (thao tác thật) | Kẹt ở đâu | Quote nguyên văn | Quyết định của nhóm |
 |---|---|---|---|---|
-| T1 · Việc gấp nhất + kênh nào | ⟨…⟩ | ⟨…⟩ | *"⟨…⟩"* | ⟨sửa gì / giữ nguyên⟩ |
-| T2 · Deadline mâu thuẫn tin ai | ⟨…⟩ | ⟨…⟩ | *"⟨…⟩"* | ⟨…⟩ |
-| T3 · Đánh dấu đã xong | ⟨…⟩ | ⟨…⟩ | *"⟨…⟩"* | ⟨…⟩ |
-| Câu mở: "tiếc điều gì nhất?" | — | — | *"⟨…⟩"* | ⟨…⟩ |
+| T1 · Việc gấp nhất + kênh nào | Dùng được **🔍 xem nguồn tin nhắn**, mở đúng tin gốc | Không | *"Dùng mượt, không bị confuse khi sử dụng"* · *"sử dụng được tính năng đánh dấu, xem nguồn tin nhắn"* | Giữ nguyên — luồng xem nguồn đi đúng hướng |
+| T2 · Deadline mâu thuẫn tin ai | (không hỏi/không ghi nhận riêng trong buổi này) | — | — | Bổ sung ở buổi test sau để phủ ca ⚪ |
+| T3 · Đánh dấu đã xong | Dùng được **✅ đánh dấu đã xong** | Không | *"sử dụng được tính năng đánh dấu…"* | Giữ nguyên |
+| Câu mở: "tiếc điều gì nhất?" | — | — | *(chưa hỏi)* | — |
 
-### Người 2 — ⟨tên · vai⟩  ·  Willing CP1: ⟨Có/Không⟩
+> **Tổng P-001:** tín hiệu tích cực — người dùng non-onboarding vẫn thao tác trơn, tự dùng được 🔍 và ✅ mà không cần hướng dẫn. Không phát hiện điểm kẹt.
+
+### P-002 — ⟨tên · vai⟩  ·  Willing CP1: ⟨Có/Không⟩
 | Task giao | Họ làm gì | Kẹt ở đâu | Quote nguyên văn | Quyết định |
 |---|---|---|---|---|
-| T1 | ⟨…⟩ | ⟨…⟩ | *"⟨…⟩"* | ⟨…⟩ |
-| T2 | ⟨…⟩ | ⟨…⟩ | *"⟨…⟩"* | ⟨…⟩ |
-| T3 | ⟨…⟩ | ⟨…⟩ | *"⟨…⟩"* | ⟨…⟩ |
-| Câu mở | — | — | *"⟨…⟩"* | ⟨…⟩ |
+| T1 · Việc gấp nhất + kênh nào | Dùng được, nhưng vướng ở **cách trình bày digest** | 3 nhóm 🔴🟡⚪ nhìn dồn vào nhau, khó tách bằng mắt | *"Cách hiển thị hơi rối, tách 3 sections ra cho nó thoáng"* | **SỬA:** tăng khoảng cách / phân tách rõ 3 nhóm 🔴🟡⚪ (blank line / divider giữa các nhóm) |
+| — · Đọc phần tóm tắt | Dễ bỏ sót dòng tóm tắt/bộ đếm | Cỡ chữ tóm tắt nhỏ, không thu hút chú ý | *"Cái tóm tắt nhìn hơi nhỏ, ko để ý được"* | **SỬA:** làm nổi tóm tắt (in đậm / heading / emoji đầu dòng) |
+| — · Đọc từng mục | Các mục việc sát nhau, khó phân biệt từng task | Thiếu khoảng cách giữa 2 mục | *"Tách ra khoảng cách giữa 2 tasks"* | **SỬA:** thêm khoảng trắng giữa các mục trong cùng nhóm |
+| Cần thêm tính năng? | — | — | *"Cần biết chính xác nguồn — và đã có rồi"* | Không yêu cầu tính năng mới; nhu cầu "biết chính xác nguồn" đã được 🔍 xem nguồn đáp ứng |
+| Câu mở | — | — | *(chưa hỏi)* | — |
+
+> **Tổng P-002:** không vướng về chức năng — 3 góp ý đều về **trình bày (layout/spacing/typography)** của embed digest. Đây là nhóm sửa nhanh, rẻ, và ăn điểm R6 vì có "chỗ cụ thể để nói".
 
 ### Người 3 — ⟨tên · vai⟩  ·  Willing CP1: Không
 | Task giao | Họ làm gì | Kẹt ở đâu | Quote nguyên văn | Quyết định |
@@ -71,9 +86,11 @@ Ký hiệu: ✅ tự làm được · ⚠️ làm được nhưng lúng túng ·
 ---
 
 ## Kết luận (4 dòng bắt buộc — R6)
-1. **Chủ đề lặp nhiều nhất:** ⟨vấn đề ≥2 người cùng vấp⟩
-2. **Sẽ sửa gì trước demo:** ⟨thay đổi cụ thể → phải ghi 1 dòng vào `spec.md` §9 Changelog⟩
-3. **Giữ nguyên gì & vì sao:** ⟨cái đang đúng hướng, có bằng chứng⟩
-4. **Để dành sau:** ⟨ý đáng làm nhưng ngoài scope demo⟩
+> **Tiến độ: đã test 2/5 người (P-001, P-002).** Cần thêm 3 người (trong đó đủ 2 Willing user đã khai CP1) trước khi chốt phần này ở CP5.
+
+1. **Chủ đề lặp nhiều nhất (tạm tính 2/5):** trình bày digest chưa "thoáng" — P-002 nêu rõ 3 điểm (3 nhóm dồn nhau, tóm tắt chữ nhỏ, các mục sát nhau). P-001 không vướng chức năng. → theo dõi 3 người còn lại xem có lặp lại không.
+2. **Sẽ sửa gì trước demo:** cải thiện layout embed digest — (a) tách rõ 3 nhóm 🔴🟡⚪, (b) làm nổi dòng tóm tắt, (c) thêm khoảng cách giữa các mục. → ghi 1 dòng vào `spec.md` §9 Changelog.
+3. **Giữ nguyên gì & vì sao:** luồng 🔍 xem nguồn + ✅ đánh dấu đã xong — cả 2 người dùng được, P-001 thao tác trơn không cần hướng dẫn; nhu cầu "biết chính xác nguồn" đã được đáp ứng.
+4. **Để dành sau:** kiểm chứng ca ⚪ "cần xác nhận" (ngôi sao sản phẩm) — 2 buổi này chưa phủ, ưu tiên hỏi ở các người test tiếp theo.
 
 > **Nhắc:** R6 yêu cầu **ít nhất 1 thay đổi** ghi vào `spec.md` §9. Nếu quyết định giữ nguyên toàn bộ thì phải nêu rõ lý do có bằng chứng (như nhóm VLearn Recall kỳ trước — vẫn đủ điểm).
