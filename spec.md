@@ -128,8 +128,17 @@ Loại: [x] Tối ưu tính năng có sẵn (thay con bot nhắc lịch của BT
   - **Kết luận:** dùng **cấu hình lượt 4** làm bản demo/nộp. Số nộp CP3 = **28/32 (88%)** — thấp hơn 91% nhưng **trung thực + tái lập được + bot live chạy đúng**. Đây là lựa chọn kỹ thuật đúng, không chạy theo con số đẹp một lần.
 
 ## §8. Phân công & kế hoạch
-- **Phân công có tên:** spec = ⟨⟩ · evidence = ⟨⟩ · prompt = ⟨⟩ · code = ⟨⟩ · demo = ⟨⟩
-- **Willing users (≥2):** ⟨tên 1⟩, ⟨tên 2⟩ — khai từ CP1, cần cho khối R6 ở CP5.
+- **Phân công có tên:**
+  | Mảng | Người phụ trách | Việc cụ thể |
+  |---|---|---|
+  | **spec** | **Lê Tuấn Anh** (đội trưởng) | Viết & chốt `spec.md` §1–§9, giữ quality bar, changelog; điều phối nhóm |
+  | **evidence** | **Nguyễn Ngọc Thái An** | Mining `discord-pack`, rút 5 quote thật, dựng bảng impact §2, đối chiếu baseline bot BTC |
+  | **prompt** | **Nguyễn Sơn Giang** | Thiết kế & tinh chỉnh prompt phân loại (`src/classify.py`): ngưỡng ≤2 ngày, luật flag ⚪, luật `sent_at`≠deadline |
+  | **code** | **Vũ Thường Tín** | `classify.py` (gọi AI) · `evaluate.py` (bảng %) · `bot.py` (bot live) · matcher chấm điểm |
+  | **demo** | **Lê Tuấn Anh** + **Nguyễn Sơn Giang** | Dựng server test Discord, nạp tin mẫu (`CP3-seed-messages.md`), quay video 30s CP3 |
+
+  *(Vibe-coding rule CP6: mỗi người phải giải thích được phần mang tên mình.)*
+- **Willing users (≥2):** ⟨CHƯA CHỐT — điền **tên + vai thật** trước CP5⟩. R6 yêu cầu người **ngoài nhóm** thật (tên/vai/task/quote nguyên văn) → **không bịa**; bịa sẽ mất điểm nặng hơn để trống.
 - **Multi-prototype (nếu làm):** so gpt-4o-mini vs gpt-4o trên cùng golden set → 2 dòng số.
 
 ## §9. Changelog
