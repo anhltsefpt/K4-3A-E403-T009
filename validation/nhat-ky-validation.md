@@ -27,9 +27,9 @@ Trong các bảng bên dưới: **"T1 🔴 xong?"** = tự tìm được việc 
 
 | # | Vai / nghề (ẩn danh) | Willing từ CP1? | T1 🔴 xong? | T2 ⚪ hiểu? | T3 ✅ xong? | Kẹt chính |
 |---|---|---|---|---|---|---|
-| P-001 | ⟨vai/nghề⟩ | ⟨Có/Không⟩ | ✅ | (không ghi nhận) | ✅ | Không — dùng mượt, không confuse |
-| P-002 | ⟨vai/nghề⟩ | ⟨Có/Không⟩ | (không ghi nhận) | (không ghi nhận) | (không ghi nhận) | Hiển thị rối · tóm tắt chữ nhỏ dễ bỏ sót · các mục sát nhau |
-| P-003 | ⟨vai/nghề⟩ | ⟨Có/Không⟩ | ⚠️ | (không ghi nhận) | (không ghi nhận) | Khó tìm đúng task ở ô search của menu 🔍 xem nguồn/ngữ cảnh |
+| P-001 | học viên K4 cụm khác | ⟨Có/Không⟩ | ✅ | (không ghi nhận) | ✅ | Không — dùng mượt, không confuse |
+| P-002 | học viên K4 cụm khác | ⟨Có/Không⟩ | (không ghi nhận) | (không ghi nhận) | (không ghi nhận) | Hiển thị rối · tóm tắt chữ nhỏ dễ bỏ sót · các mục sát nhau |
+| P-003 | học viên K4 cụm khác | ⟨Có/Không⟩ | ⚠️ | (không ghi nhận) | (không ghi nhận) | Khó tìm đúng task ở ô search của menu 🔍 xem nguồn/ngữ cảnh |
 | 4 | ⟨…⟩ | ⟨Không⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ |
 | 5 | ⟨…⟩ | ⟨Không⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ | ⟨…⟩ |
 
@@ -39,7 +39,7 @@ Ký hiệu: ✅ tự làm được · ⚠️ làm được nhưng lúng túng ·
 
 ## Nhật ký chi tiết từng người
 
-### P-001 — ⟨vai/nghề⟩  ·  Willing CP1: ⟨Có/Không⟩
+### P-001 — học viên K4 cụm khác  ·  Willing CP1: ⟨Có/Không⟩
 | Task giao | Họ làm gì (thao tác thật) | Kẹt ở đâu | Quote nguyên văn | Quyết định của nhóm |
 |---|---|---|---|---|
 | T1 · Việc gấp nhất + kênh nào | Dùng được **🔍 xem nguồn tin nhắn**, mở đúng tin gốc | Không | *"Dùng mượt, không bị confuse khi sử dụng"* · *"sử dụng được tính năng đánh dấu, xem nguồn tin nhắn"* | Giữ nguyên — luồng xem nguồn đi đúng hướng |
@@ -49,7 +49,7 @@ Ký hiệu: ✅ tự làm được · ⚠️ làm được nhưng lúng túng ·
 
 > **Tổng P-001:** tín hiệu tích cực — người dùng non-onboarding vẫn thao tác trơn, tự dùng được 🔍 và ✅ mà không cần hướng dẫn. Không phát hiện điểm kẹt.
 
-### P-002 — ⟨vai/nghề⟩  ·  Willing CP1: ⟨Có/Không⟩
+### P-002 — học viên K4 cụm khác  ·  Willing CP1: ⟨Có/Không⟩
 | Task giao | Họ làm gì | Kẹt ở đâu | Quote nguyên văn | Quyết định |
 |---|---|---|---|---|
 | T1 · Việc gấp nhất + kênh nào | Dùng được, nhưng vướng ở **cách trình bày digest** | 3 nhóm 🔴🟡⚪ nhìn dồn vào nhau, khó tách bằng mắt | *"Cách hiển thị hơi rối, tách 3 sections ra cho nó thoáng"* | **SỬA:** tăng khoảng cách / phân tách rõ 3 nhóm 🔴🟡⚪ (blank line / divider giữa các nhóm) |
@@ -60,7 +60,7 @@ Ký hiệu: ✅ tự làm được · ⚠️ làm được nhưng lúng túng ·
 
 > **Tổng P-002:** không vướng về chức năng — 3 góp ý đều về **trình bày (layout/spacing/typography)** của embed digest. Đây là nhóm sửa nhanh, rẻ, và ăn điểm R6 vì có "chỗ cụ thể để nói".
 
-### P-003 — ⟨vai/nghề⟩  ·  Willing CP1: ⟨Có/Không⟩
+### P-003 — học viên K4 cụm khác  ·  Willing CP1: ⟨Có/Không⟩
 | Task giao | Họ làm gì | Kẹt ở đâu | Quote nguyên văn | Quyết định |
 |---|---|---|---|---|
 | T1 · Việc gấp nhất + kênh nào | Mở được menu **🔍 Xem nguồn / ngữ cảnh** nhưng mất thời gian dò đúng mục | Ô search trong menu khó lọc — gõ không ra đúng task cần xem nguồn | *"phần tìm context lại hơi khó dùng, vì việc tìm task ở ô search khso"* | **ĐÃ SỬA (`bot.py`):** gắn link **[🔍 xem nguồn]** thẳng lên mỗi dòng (1 click, khỏi dò) → **bỏ hẳn menu 🔍**; ca ⚪ thêm dòng nhắc ⚠️ "bot không tự chốt" ngay trong embed |
