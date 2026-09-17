@@ -26,9 +26,11 @@ client = OpenAI()  # đọc OPENAI_API_KEY từ .env
 MODEL = "gpt-4o-mini"               # rẻ, đủ cho phân loại; đổi model OpenAI khác ở đây
 DATA = "data/discord-pack/k4_messages.csv"  # (repo BTC — chỉ đọc, không commit)
 
-# Ngày giả định học viên bấm /digest. NGƯỜI gán nhãn & AI PHẢI dùng CHUNG mốc này,
-# nếu không do_now/soon sẽ lệch nhau và chấm điểm bất công. Đổi ở đây nếu chọn ngày khác.
-REFERENCE_NOW = "2026-09-14"        # = ngày cuối của data; ngưỡng do_now = ≤ 2 ngày
+# Ngày AI coi là "hôm nay" để tính gần/xa hạn (ngưỡng do_now = ≤ 2 ngày).
+# - CHẤM GOLDEN SET: để cố định 2026-09-14 (ngày cuối của data) → tái lập được số đo.
+# - BOT LIVE: bot.py set REFERENCE_NOW = ngày hôm nay thật (qua env) → digest không bị lệch ngày.
+# Ưu tiên biến môi trường REFERENCE_NOW nếu có; không thì mặc định 14/9.
+REFERENCE_NOW = os.getenv("REFERENCE_NOW") or "2026-09-14"
 
 # Prompt hệ thống: mô tả LUẬT phân loại. Sửa ở đây khi tinh chỉnh.
 SYSTEM = f"""Bạn là bộ lọc digest cho cộng đồng Discord của một khoá học.
@@ -40,9 +42,14 @@ Với MỖI tin nhắn, phân loại theo luật sau:
   > 2 → 'soon' (KHÔNG phải 'do_now'). Chỉ 'do_now' khi hạn ≤ 16/9 hoặc đã qua.
 - confirm: liên quan deadline NHƯNG thông tin mâu thuẫn / mơ hồ / nhiều nguồn
   nói khác nhau. KHÔNG được tự chốt — đặt needs_confirm=true.
-- skip: không phải task/deadline (hỏi vu vơ, hỗ trợ kỹ thuật, xã giao, cá nhân).
+- skip: không phải task/deadline (tán gẫu, trả lời ngắn, hỏi vu vơ, hỗ trợ kỹ thuật,
+  xã giao, cá nhân, link, tag người). Ví dụ PHẢI skip: "oke nhé", "có", "chia gì cơ",
+  "tối có đi lab k", "https://...", "@ai đó ...".
 
 QUY TẮC QUAN TRỌNG:
+- 'sent_at' là GIỜ GỬI tin, KHÔNG phải deadline. TUYỆT ĐỐI không dùng sent_at làm
+  deadline. Chỉ trích deadline từ NỘI DUNG ('content'). Nếu content KHÔNG tự nêu một
+  mốc hạn cụ thể → deadline="" và bucket = skip (trừ ca confirm bên dưới).
 - ĐỐI CHIẾU CẢ LÔ: nếu ≥2 tin nói KHÁC NHAU về cùng một mốc/việc, HOẶC một tin
   CHẤT VẤN / thắc mắc về một deadline (vd "sao deadline ghép đội end sớm vậy?")
   trong khi tin khác nói mốc đó đã thay đổi/đóng → CẢ HAI tin = confirm,
@@ -87,11 +94,12 @@ SCHEMA = {
 def classify_batch(msgs):
     """Gọi OpenAI một lần cho cả lô tin. Trả list dict theo SCHEMA."""
     lines = [f"- msg_id={m['msg_id']} | channel={m['channel']} | "
-             f"time={m['created_at']} | content={m['content']}" for m in msgs]
+             f"sent_at={m['created_at']} | content={m['content']}" for m in msgs]
     user = "Phân loại các tin sau. Trả về đúng một kết quả cho mỗi msg_id:\n" \
            + "\n".join(lines)
     resp = client.chat.completions.create(
         model=MODEL,
+        temperature=0,   # ổn định & tái lập được (cùng input → cùng output)
         messages=[{"role": "system", "content": SYSTEM},
                   {"role": "user", "content": user}],
         response_format={"type": "json_schema", "json_schema": {
