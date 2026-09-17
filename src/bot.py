@@ -122,8 +122,13 @@ class DigestView(discord.ui.View):
         return [(i, it) for i, it in enumerate(self.items) if not it["hidden"]]
 
     def build_embed(self):
-        embed = discord.Embed(title="📋 Priority Digest",
-                              description="Task & deadline gom từ nhiều kênh, xếp theo ưu tiên.")
+        # Đếm trước để đưa TÓM TẮT lên đầu (feedback validation P-002: footer nhỏ, dễ bỏ sót).
+        pending = sum(1 for _, it in self._visible()
+                      if it["bucket"] in ("do_now", "soon") and not it["done"])
+        conf = sum(1 for _, it in self._visible() if it["bucket"] == "confirm")
+        # (b) Tóm tắt nổi hẳn ở description in đậm thay vì set_footer chữ xám nhỏ.
+        summary = f"🗂️ **{pending} việc có hạn** · **{conf} cần xác nhận**\nGom từ nhiều kênh, xếp theo ưu tiên."
+        embed = discord.Embed(title="📋 Priority Digest", description=summary)
         shown = False
         for b in ("do_now", "soon", "confirm"):
             lines = []
@@ -133,23 +138,36 @@ class DigestView(discord.ui.View):
                 task = f"~~{it['task']}~~" if it["done"] else f"**{it['task']}**"
                 prefix = "✅" if it["done"] else EMOJI[b]
                 dl = f" · ⏰ {it['deadline']}" if it["deadline"] else ""
-                lines.append(f"{prefix} {task}{dl} · #{it['channel']}")
+                # Cách 1: link nhảy tin gốc gắn THẲNG lên mỗi dòng → xem context 1 click.
+                src = f" · [🔍 xem nguồn]({it['jump_url']})" if it["jump_url"] else ""
+                # (c) mỗi mục 2 dòng (việc+hạn / kênh nguồn) cho thoáng, dễ phân biệt.
+                lines.append(f"{prefix} {task}{dl}\n ↳ #{it['channel']}{src}")
             if lines:
                 shown = True
-                embed.add_field(name=f"{EMOJI[b]} {TITLE[b]}",
-                                value="\n".join(lines)[:1000], inline=False)
+                # Ca ⚪: nhắc ngay trong embed rằng bot KHÔNG tự chốt (giữ tinh thần
+                # automation conditional, vì đã bỏ menu 🔍 vốn kèm câu nhắc này).
+                if b == "confirm":
+                    lines.append("⚠️ *Bot không tự chốt các mục này — mở nguồn kiểm rồi quyết.*")
+                # (a) tiêu đề nhóm kẹp giữa 2 vạch ngang cho tách hẳn các section.
+                header = f"━━━━━ {EMOJI[b]} {TITLE[b]} ━━━━━"
+                # (c) chèn dòng trống giữa các mục để tách rõ từng task trong nhóm.
+                embed.add_field(name=header,
+                                value="\n\n".join(lines)[:1000], inline=False)
         if not shown:
             embed.add_field(name="🎉 Xong hết việc hôm nay!", value="Không còn mục nào trong digest.", inline=False)
-        pending = sum(1 for _, it in self._visible()
-                      if it["bucket"] in ("do_now", "soon") and not it["done"])
-        conf = sum(1 for _, it in self._visible() if it["bucket"] == "confirm")
-        embed.set_footer(text=f"{pending} việc có hạn · {conf} cần xác nhận")
+        embed.set_footer(text="Chọn mục ở menu 🔍 để xem nguồn / ngữ cảnh")
         return embed
 
     def _opts(self, idx_items):
         out = []
         for i, it in idx_items:
-            desc = (f"⏰ {it['deadline']} · " if it["deadline"] else "") + f"#{it['channel']}"
+            # Description của SelectOption là plain text (Discord không cho tô màu) →
+            # dùng icon 📍 trước kênh để tách rõ 2 mục thông tin: hạn · kênh nguồn. Bỏ icon ⏰.
+            parts = []
+            if it["deadline"]:
+                parts.append(it["deadline"])
+            parts.append(f"📍 #{it['channel']}")
+            desc = " · ".join(parts)
             out.append(discord.SelectOption(label=_short(it["task"], 95), value=str(i),
                                             description=_short(desc, 95)))
         return out[:25]
@@ -163,7 +181,7 @@ class DigestView(discord.ui.View):
             self.add_item(ActionSelect("done", "✅ Đánh dấu đã xong…", self._opts(done_src)))
         if vis:
             self.add_item(ActionSelect("hide", "🙈 Ẩn khỏi digest…", self._opts(vis)))
-            self.add_item(ActionSelect("source", "🔍 Xem nguồn / ngữ cảnh…", self._opts(vis), single=True))
+        # Đã bỏ menu 🔍: mỗi dòng có sẵn link "xem nguồn" 1-click; ca ⚪ có dòng nhắc ⚠️ trong embed.
         self.add_item(RefreshButton())
 
     # --- xử lý các thao tác ---
@@ -188,18 +206,6 @@ class DigestView(discord.ui.View):
             f"🙈 Đã ẩn **{len(idxs)} mục** khỏi digest: {names}.",
             ephemeral=True, view=UndoView(self, interaction.message, idxs, "hide"))
 
-    async def show_source(self, interaction, idx):
-        it = self.items[idx]
-        if it["jump_url"]:
-            link = f"[→ Nhảy tới tin gốc ở #{it['channel']}]({it['jump_url']})"
-        else:
-            link = "(không có link — tin đã bị xoá?)"
-        extra = ("\n⚪ *Đây là ca cần xác nhận: có tin khác nói khác về cùng deadline này. "
-                 "Bot KHÔNG tự chốt — bạn kiểm 2 nguồn rồi quyết.*") if it["bucket"] == "confirm" else ""
-        await interaction.response.send_message(
-            f"📌 Nguồn của **{_short(it['task'], 80)}**\n#{it['channel']} · {link}{extra}",
-            ephemeral=True)
-
 
 class ActionSelect(discord.ui.Select):
     def __init__(self, mode, placeholder, options, single=False):
@@ -210,9 +216,7 @@ class ActionSelect(discord.ui.Select):
     async def callback(self, interaction):
         view: DigestView = self.view
         idxs = [int(v) for v in self.values]
-        if self.mode == "source":
-            await view.show_source(interaction, idxs[0])
-        elif self.mode == "done":
+        if self.mode == "done":
             await view.mark_done(interaction, idxs)
         else:
             await view.hide_items(interaction, idxs)
