@@ -149,3 +149,62 @@ flowchart LR
 - `bot.py` = **khuôn mặt**: con bot Discord nhận lệnh `/digest` rồi gọi bộ não trả kết quả.
 - `golden-set.csv` + `evaluate.py` = **thước đo**: so AI với đáp án người để ra con số %.
 - `spec.md` = **hợp đồng chất lượng**: chốt "đạt khi ≥ X% đúng" *trước* khi biết kết quả (khóa ở CP4).
+
+---
+
+## 6. Hai file lõi CP3 làm gì — `classify.py` & `evaluate.py`
+
+Đây là 2 file kỹ thuật quan trọng nhất của CP3. Hình dung một dây chuyền 2 khâu:
+**`classify.py` cho AI đoán → `evaluate.py` chấm điểm cái AI vừa đoán.**
+
+```mermaid
+flowchart LR
+    G[golden-set.csv<br/>32 tin đã gán nhãn người] --> C[classify.py<br/>🧠 AI ĐOÁN]
+    C --> P[predictions.csv<br/>AI phân loại 32 tin]
+    G -->|đáp án người| E[evaluate.py<br/>📊 CHẤM ĐIỂM]
+    P -->|đáp án AI| E
+    E --> R[Bảng %:<br/>đúng 28/32 = 88%<br/>+ danh sách ca sai]
+    style C fill:#e7f3ff,stroke:#0066cc
+    style E fill:#fff0e7,stroke:#cc6600
+```
+
+### 6a. `classify.py` — bộ não AI (khâu ĐOÁN)
+
+**Việc nó làm:** đọc từng tin Discord → hỏi OpenAI (gpt-4o-mini) → trả về mỗi tin thuộc nhóm nào,
+deadline là gì, kênh nào. Đây chính là **"≥1 lời gọi AI chạy thật"** mà CP3 bắt buộc — không hardcode kết quả.
+
+Mỗi tin được xếp vào **1 trong 4 nhóm:**
+
+| Nhóm | Nghĩa | Ví dụ |
+|---|---|---|
+| 🔴 `do_now` | Có mốc hạn, đã quá hạn hoặc còn **≤ 2 ngày** | "Gate 1 chốt 23:59 hôm nay" |
+| 🟡 `soon` | Có mốc hạn, còn **> 2 ngày** | "hạn đăng ký đề tài 20/9" (còn 6 ngày) |
+| ⚪ `confirm` | Liên quan deadline nhưng **mâu thuẫn/mơ hồ** → không tự chốt | "sao deadline ghép đội end sớm vậy?" ↔ "cửa sổ đã đóng" |
+| ⚫ `skip` | Không phải task/deadline (tán gẫu, hỏi vu vơ, link, tag) | "oke nhé", "tối có đi lab k" |
+
+**Vài chỗ đáng chú ý trong code (để giải thích khi demo — luật vibe-coding):**
+- Luật phân loại viết bằng tiếng Việt ngay trong biến `SYSTEM` (dòng 36) → sửa luật là sửa ở đây.
+- `REFERENCE_NOW` (dòng 33) = ngày AI coi là "hôm nay": **cố định 14/9** khi chấm điểm (để tái lập được số), nhưng **ngày thật** khi bot chạy live.
+- `temperature=0` (dòng 102) → cùng input luôn cho cùng output (đây là fix ở lượt 4 giúp số ổn định 88%).
+- 3 luật cứng chống lỗi hay gặp: **`sent_at` (giờ gửi) ≠ deadline**, **đối chiếu cả lô** để bắt ca mâu thuẫn, và **câu hỏi ≠ tuyên bố deadline**.
+
+Chạy: `python src/classify.py golden/golden-set.csv > out/predictions.csv`
+
+### 6b. `evaluate.py` — thước đo (khâu CHẤM ĐIỂM)
+
+**Việc nó làm:** đặt cạnh nhau đáp án người (trong `golden-set.csv`) và đáp án AI (`predictions.csv`),
+đếm xem trùng bao nhiêu → in **bảng "đúng N/32 = X%"** kèm **danh sách ca sai** để phân tích khi pitch.
+
+**Một tin tính là ĐÚNG khi** (tiêu chí khắt khe đã chốt):
+- nhóm khớp, **và**
+- với 🔴/🟡: deadline khớp **và** kênh khớp;
+- với ⚪: AI có bật cờ `needs_confirm`.
+
+**Chỗ khôn khéo nhất:** hàm `deadline_match` so deadline **theo tập số ngày**, bỏ năm và định dạng
+→ `14/9` được coi là bằng `14/09/2026`. Chính cách chấm này gỡ 7 ca bị trừ oan vì format,
+kéo lượt 1 từ **66% → 81%** (xem §7 spec) — tức có lúc "AI không dốt hơn, chỉ là thước đo cũ trừ oan".
+
+> ⚠️ `evaluate.py` **không sửa** kết quả AI, chỉ **so và đếm**. Muốn AI đúng hơn thì sửa `classify.py`
+> (luật/prompt), rồi chạy lại cả 2 file. Đây là lý do golden set phải **gán nhãn mù TRƯỚC** khi chạy — nếu không sẽ thiên vị.
+
+Chạy: `python src/evaluate.py golden/golden-set.csv out/predictions.csv`
